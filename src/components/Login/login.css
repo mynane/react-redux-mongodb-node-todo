@@ -1,0 +1,13 @@
+.web-login-wrap {
+    margin: 0 auto;
+    width: 300px;
+    margin-top: 100px;
+}
+.web-handle-type {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.web-forget-item {
+    margin-bottom: 10px;
+}
