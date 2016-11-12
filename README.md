@@ -1,4 +1,4 @@
-# react-redux-todo-demo
+# react-redux-mongodb-node-todo
 
 This is a demo app based on the [todomvc example](https://github.com/rackt/redux/tree/master/examples/todomvc) in the [redux source code](https://github.com/rackt/redux).
 
