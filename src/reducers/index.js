@@ -66,6 +66,11 @@ var reducer = function (state, action) {
         return Object.assign({}, state, {
           login: {show: false, showText: ''}
         });
+
+      case 'LIST_TODO':
+        return Object.assign({}, state, {
+          list: action.list
+        });
     default: 
       return state;
   }

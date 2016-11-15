@@ -4,7 +4,6 @@ let api = 'http://localhost:3000/login';
 const notDisActions = {
     submitTodo:(dispatch, getState) => {
         let that = notDisActions.submitTodo.value;
-        console.log(that);
         ajax({
             url: api,
             data:{
@@ -13,15 +12,16 @@ const notDisActions = {
             },
             type: 'post'
         }).then((data)=>{
-            console.log(data);
+            //  dispatch({
+            //     type: 'LOAD_TODO',
+            //     isLoad: false
+            // });
+            console.log(getState());
             if(data.errorCode == 0) {
-                dispatch([{
-                    type: 'LOGIN_TODO',
-                    value: data.returnValue
-                },{
+                dispatch({
                     type: 'LOGIN_SHOW_TODO',
-                    login: {show: true, showText: "登录成功"}
-                }]);
+                    login: {show: true, showText: "登录成功", succeed: true}
+                });
             }
             else {
                 dispatch({

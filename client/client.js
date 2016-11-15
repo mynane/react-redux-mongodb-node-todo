@@ -5,6 +5,8 @@ import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import App from '../src/index';
 import Hello from '../src/components/hello/index';
 import Login from '../src/components/Login/index';
+import Register from '../src/components/Register/index';
+import List from '../src/components/List/index';
 
 import 'antd/dist/antd.css';
 
@@ -19,6 +21,7 @@ var initialState = {
     completed: false,
     text: 'Learn how to use react and redux'
   }],
+  list:[],
   menuList:[{
     id: 0,
     "name": "选项1",
@@ -52,6 +55,8 @@ render(
         <IndexRoute component={Hello}/>
         <Route path="/index" component={Hello} />
         <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/list" component={List} />
       </Route>
     </Router>
   </Provider>,

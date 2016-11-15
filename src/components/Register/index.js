@@ -8,9 +8,9 @@ const FormItem = Form.Item;
 import actions from '../../actions';
 import notDisAction from '../../actions/actions';
 
-import './login.css';
+import './register.css';
 
-class Login extends Component {
+class Register extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -22,7 +22,7 @@ class Login extends Component {
     handleSubmit(e) {
         this.setState({isLoad: true});
         e.preventDefault();
-        let api = 'http://localhost:3000/login';
+        let api = 'http://localhost:3000/register';
         let dispatch = this.props.dispatch;
         this.props.form.validateFields((err, value) => {
             if (!err) {
@@ -30,13 +30,14 @@ class Login extends Component {
                     url: api,
                     data:{
                         mobile: value.userName,
-                        password: value.password
+                        password: value.passwordOne,
+                        passwordTwo: value.passwordTwo
                     },
                     type: 'post'
                 }).then((data)=>{
                     if(data.errorCode == 0) {
-                        message.success('登录成功');
-                        this.props.router.push('/list?userId=' + data.returnValue._id);
+                        message.success('注册成功');
+                        this.props.router.push('/list')
                     }
                     else {
                         message.error(data.errorReason);
@@ -60,25 +61,26 @@ class Login extends Component {
                     {getFieldDecorator('userName', {
                         rules: [{ required: true, message: 'Please input your username!' }],
                     })(
-                        <Input addonBefore={<Icon type="user" />} placeholder="Username" />
+                        <Input addonBefore={<Icon type="phone" />} placeholder="Username" />
                     )}
                     </FormItem>
                     <FormItem>
-                    {getFieldDecorator('password', {
+                    {getFieldDecorator('passwordOne', {
                         rules: [{ required: true, message: 'Please input your Password!' }],
                     })(
                         <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Password" />
                     )}
                     </FormItem>
-                    <div className="web-forget-item">
-                    {getFieldDecorator('remember', {
-                        valuePropName: 'checked',
-                        initialValue: true,
+                    <FormItem>
+                    {getFieldDecorator('passwordTwo', {
+                        rules: [{ required: true, message: 'Please input your Password!' }],
                     })(
-                        <Checkbox>Remember me</Checkbox>
+                        <Input addonBefore={<Icon type="lock" />} type="password" placeholder="repeat Password" />
                     )}
+                    </FormItem>
+                    <div className="web-forget-item">
                     <a className="login-form-forgot" href="/find_passwd">Forgot password</a>
-                    Or <a href="#/register">register now!</a>
+                    Or <a href="#/login">login now!</a>
                     </div>
                     <FormItem>
                         <Button type="primary" htmlType="submit" className="login-form-button" loading={this.state.isLoad ? true : false}>
@@ -102,4 +104,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(Login));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(Register));
