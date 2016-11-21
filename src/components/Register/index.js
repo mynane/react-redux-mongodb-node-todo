@@ -19,10 +19,40 @@ class Register extends Component {
             captcha: '/captcha.png?_t=' + new Date() * 1
         };
         this.refreshCaptcha = this.refreshCaptcha.bind(this);
+        this.authCode = this.authCode.bind(this);
     }
 
     refreshCaptcha() {
         this.setState({'captcha': '/captcha.png?v=' + new Date()})
+    }
+
+    authCode() {
+        let captchaCode = document.getElementById('captchaCode').value;
+        let email = document.getElementById('email').value;
+        this.refreshCaptcha();
+        if(captchaCode == ''){
+            message.error('请输入验证码');
+        }
+        if(!email){
+            message.error('请输入邮箱');
+        }
+        ajax({
+            url: '/authCode',
+            data:{
+                captchaCode: captchaCode,
+                email: email
+            },
+            type: 'post'
+        }).then((jsonData)=>{
+            if(jsonData.meta.code == 200) {
+                message.success('验证成功');
+                // this.props.router.replace('/list')
+            }
+            else {
+                message.error(jsonData.meta.message);
+            }
+        }).catch((err) => {
+        });
     }
 
     handleSubmit(e) {
@@ -37,7 +67,8 @@ class Register extends Component {
                         mobile: value.userName,
                         password: value.passwordOne,
                         passwordTwo: value.passwordTwo,
-                        captchaCode: value.captchaCode
+                        captchaCode: value.captchaCode,
+                        email: value.email
                     },
                     type: 'post'
                 }).then((jsonData)=>{
@@ -69,6 +100,13 @@ class Register extends Component {
                         )}
                         </FormItem>
                         <FormItem>
+                        {getFieldDecorator('email', {
+                            rules: [{ required: true, message: 'Please input your email!' }],
+                        })(
+                            <Input id="email" addonBefore={<Icon type="mail" />} placeholder="email" />
+                        )}
+                        </FormItem>
+                        <FormItem>
                         {getFieldDecorator('passwordOne', {
                             rules: [{ required: true, message: 'Please input your Password!' }],
                         })(
@@ -85,12 +123,12 @@ class Register extends Component {
                         <FormItem>
                             <div>
                             {getFieldDecorator('captchaCode', {
-                                // rules: [{ required: true, message: '请输入验证码!' }],
+                                rules: [{ required: true}],
                             })(
-                                <Input type="text" placeholder="验证码" className="captcha-code login-left"/>
+                                <Input type="text" id="captcha-code" placeholder="验证码" className="captcha-code login-left"/>
                             )}
                             <div className="login-left login-code-content"><img src={this.state.captcha} onClick={this.refreshCaptcha} /></div>
-                            <Button onClick={this.refreshCaptcha} className="login-left login-refresh-content">刷新</Button></div>
+                            <Button onClick={this.authCode} className="login-left login-refresh-content">获取验证码</Button></div>
                         </FormItem>
                         <div className="web-forget-item">
                         <a className="login-form-forgot" href="/find_passwd">Forgot password</a>

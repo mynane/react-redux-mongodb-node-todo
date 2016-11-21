@@ -8,6 +8,7 @@ import Login from '../src/components/Login/index';
 import Register from '../src/components/Register/index';
 import List from '../src/components/List/index';
 import Detail from '../src/components/Detail/index';
+import Chat from '../src/components/Chat/index';
 import 'antd/dist/antd.css';
 
 var initialState = {
@@ -60,6 +61,7 @@ render(
         <Route path="/register" component={Register} />
         <Route path="/list" component={List} />
         <Route path="/detail" component={Detail} />
+        <Route path="/chat" component={Chat} />
       </Route>
     </Router>
   </Provider>,

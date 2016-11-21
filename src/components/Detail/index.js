@@ -9,10 +9,10 @@ import actions from '../../actions';
 import notDisAction from '../../actions/actions';
 
 import './detail.css';
-
+let uploadUrl = '/upload';
 const props = {
   name: 'file',
-  action: '/upload',
+  action: uploadUrl,
   headers: {
     authorization: 'authorization-text',
   },
@@ -89,10 +89,13 @@ class Login extends Component {
                 <div><ul>
                     {
                         this.props.files.map((item, index)=>{
-                            return (<li><span>{index}</span><span> &nbsp;:&nbsp; </span><span><a href={'/download/'+item._id} >{item.fileName}</a></span></li>)
+                            return (<li><span>{index}</span><span> &nbsp;:&nbsp; </span>
+                            <span><a href={'/download/'+item._id} title="点击下载">{item.fileName}</a></span>
+                            <span>{Math.ceil(item.fileSize/1024) + 'KB'}</span></li>)
                         })
                     }
                 </ul></div>
+                <img src='/qrcode' />
                  <Upload {...props}>
                     <Button type="ghost">
                     <Icon type="upload" /> Click to Upload

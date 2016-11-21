@@ -5,6 +5,7 @@ var jwt = require('jsonwebtoken');
 var router = express.Router();
 var formidable = require('formidable');
 var util = require('util');
+var qr_image = require('qr-image');  
 
 var UserEntity = require('../models/User').UserEntity;
 var PostEntity = require('../models/Post').PostEntity;
@@ -20,6 +21,37 @@ var captchapng = require('captchapng');
 
 var crypto = require('crypto');
 var privateKey = fs.readFileSync(path.join(process.cwd(), 'private.key'));
+var CONFIG = require('../config/sysConfig').CONFIG;
+
+var nodemailer = require('nodemailer');
+console.log(CONFIG);
+var transporter = nodemailer.createTransport({
+    service: CONFIG.EMAIL.service,
+    auth: {
+        user: CONFIG.EMAIL.user,
+        pass: CONFIG.EMAIL.pass
+    }
+});
+
+
+
+function sendEmail(toEmail, code){
+    var mailOptions = {
+        from: CONFIG.EMAIL.user, // sender address
+        to: toEmail, // list of receivers
+        subject: 'Hello ✔', // Subject line
+        text: 'Hello world ✔', // plaintext body
+        html: '<b>邀请验证码: ' + code + '</b>' // html body
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log('Message sent: ' + info.response);
+        }
+    });
+}
 
 //注册路由  
 router.post('/register', function (req, res, next) {
@@ -104,8 +136,40 @@ router.post('/register', function (req, res, next) {
 
 });
 
+// 验证用户
+router.post('/authCode', function (req, res, next) {
+    var email = req.body.email;
+    var captchaCode = req.body.captchaCode;
+    var restResult = new RestResult();
+    if(!email) {
+        restResult.meta.code = RestResult.ILLEGAL_ARGUMENT_ERROR_CODE;
+        restResult.meta.message = "邮箱不能为空";
+        res.send(restResult);
+        return;
+    }
+    if(!captchaCode){
+        restResult.meta.code = RestResult.ILLEGAL_ARGUMENT_ERROR_CODE;
+        restResult.meta.message = "验证码不能为空";
+        res.send(restResult);
+        return;
+    }
+    if(captchaCode != req.session.captchaCode){
+        restResult.meta.code = RestResult.ILLEGAL_ARGUMENT_ERROR_CODE;
+        restResult.meta.message = "验证码错误";
+        res.send(restResult);
+        return;
+    }
+    var authCode = parseInt(Math.random()*9000+1000);
+    req.session.authCode = authCode;
+    sendEmail('2590575337@qq.com', authCode);
+    restResult.meta.code = RestResult.NO_ERROR;
+    restResult.meta.message = "成功";
+    res.send(restResult);
+});
+
 //登陆路由  
 router.post('/login', function (req, res, next) {
+    // var client = req.client;
     var restResult = new RestResult();
     var mobile = req.body.mobile;
     if (!/1\d{10}/.test(mobile)) { //手机号码格式校验  
@@ -136,7 +200,6 @@ router.post('/login', function (req, res, next) {
         res.send(restResult);
         return;
     }
-
     password = crypto.createHash('md5').update(password).digest('hex');
     UserEntity.findOne({ mobile: mobile, password: password }, { password: 0 }, function (err, user) {
         if (err) {
@@ -155,6 +218,7 @@ router.post('/login', function (req, res, next) {
 
         restResult.data = user;
         var token = jwt.sign({ uid: user._id }, privateKey, { expiresIn: '1h' });
+        // client.set('token',token);
         res.cookie('token', token, { maxAge: 600000, httpOnly: true, path: '/', secure: false });
         res.cookie('uid', user._id, { maxAge: 600000, httpOnly: true, path: '/', secure: false });
         res.send(restResult);
@@ -255,6 +319,8 @@ router.get('/captcha.png', function (req, res) {
 });
 
 router.post('/upload', function (req, res, next) {
+    var id = req.path.split('/')[2];
+    console.log(req.path);
     var form = new formidable.IncomingForm();
     form.encoding = 'utf-8';
     form.keepExtensions = true;
@@ -262,7 +328,7 @@ router.post('/upload', function (req, res, next) {
     form.parse(req);
     form.on('file', function(name, file) {
         if(!!file) {
-            var uploadFile = new ImageEntity({ fileName: file.name, fileType: file.type, fileSize: file.size, filePath: file.path, listId:'582aa1a4b6687e6344e82b48' });
+            var uploadFile = new ImageEntity({ fileName: file.name, fileType: file.type, fileSize: file.size, filePath: file.path, listId: id });
             uploadFile.save(function(err, row){
                 if(err){
                     return;
@@ -278,7 +344,6 @@ router.post('/upload', function (req, res, next) {
 });
 
 router.get('/download/*',function(req,res,next){
-    console.log(req.path.split('/')[2])
     var id = req.path.split('/')[2];
     ImageEntity.findOne({_id: id}, function(err, doc) {
         res.download(doc.filePath, doc.fileName);
@@ -289,4 +354,9 @@ router.get('/download/*',function(req,res,next){
     // res.download(realpath,filename);
 });
 
+router.get('/qrcode', function (req, res){
+    var temp_qrcode = qr_image.image('http://www.baidu.com');  
+    res.type('png');  
+    temp_qrcode.pipe(res); 
+}); 
 module.exports = router;
