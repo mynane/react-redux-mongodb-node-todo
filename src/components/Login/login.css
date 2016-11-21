@@ -11,3 +11,18 @@
 .web-forget-item {
     margin-bottom: 10px;
 }
+#captchaCode {
+    width: 100px;
+}
+.login-left {
+    float: left;
+}
+.login-code-content {
+    width: 80px;
+    height: 30px;
+    margin: 0px 20px;
+    cursor: pointer;
+}
+.login-wrap {
+    width: 300px;
+}

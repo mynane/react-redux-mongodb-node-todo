@@ -7,7 +7,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var webpackDevMiddleware = require('webpack-dev-middleware');
 var webpackHotMiddleware = require('webpack-hot-middleware');
-var routesUser = require('./routes/user');
+var routes = require('./routes/user');
 var app = express();
 var port = 3000;
 
@@ -21,11 +21,12 @@ app.use(cookieParser());
 app.use(session({
   resave: true, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
-  secret: 'love'
+  secret: 'love',
+  name: 'pageSeesion'
 }));
 
 app.use(express.static('./dist'));
-app.use('/', routesUser);
+app.use('/', routes);
 app.get("/", function(req, res) {
   res.sendFile(path.resolve('client/index.html'));
 });

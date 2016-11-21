@@ -15,12 +15,17 @@ class Register extends Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
-            isLoad: false
-        }
+            isLoad: false,
+            captcha: '/captcha.png?_t=' + new Date() * 1
+        };
+        this.refreshCaptcha = this.refreshCaptcha.bind(this);
+    }
+
+    refreshCaptcha() {
+        this.setState({'captcha': '/captcha.png?v=' + new Date()})
     }
 
     handleSubmit(e) {
-        this.setState({isLoad: true});
         e.preventDefault();
         let api = 'http://localhost:3000/register';
         let dispatch = this.props.dispatch;
@@ -31,22 +36,20 @@ class Register extends Component {
                     data:{
                         mobile: value.userName,
                         password: value.passwordOne,
-                        passwordTwo: value.passwordTwo
+                        passwordTwo: value.passwordTwo,
+                        captchaCode: value.captchaCode
                     },
                     type: 'post'
-                }).then((data)=>{
-                    if(data.errorCode == 0) {
+                }).then((jsonData)=>{
+                    if(jsonData.meta.code == 200) {
                         message.success('注册成功');
-                        this.props.router.push('/list')
+                        this.props.router.replace('/list')
                     }
                     else {
-                        message.error(data.errorReason);
+                        message.error(jsonData.meta.message);
                     }
-                    this.setState({isLoad: false});
                 }).catch((err) => {
-                    console.log(err);
-                    this.setState({isLoad: false});
-                })
+                });
             }
         });
     }
@@ -55,39 +58,51 @@ class Register extends Component {
        const { getFieldDecorator } = this.props.form;
         return (
             <div className="web-login-wrap">
-                <div className ="web-handle-type">{this.props.handleText}</div>
-                <Form onSubmit={this.handleSubmit} className="login-form">
-                    <FormItem>
-                    {getFieldDecorator('userName', {
-                        rules: [{ required: true, message: 'Please input your username!' }],
-                    })(
-                        <Input addonBefore={<Icon type="phone" />} placeholder="Username" />
-                    )}
-                    </FormItem>
-                    <FormItem>
-                    {getFieldDecorator('passwordOne', {
-                        rules: [{ required: true, message: 'Please input your Password!' }],
-                    })(
-                        <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Password" />
-                    )}
-                    </FormItem>
-                    <FormItem>
-                    {getFieldDecorator('passwordTwo', {
-                        rules: [{ required: true, message: 'Please input your Password!' }],
-                    })(
-                        <Input addonBefore={<Icon type="lock" />} type="password" placeholder="repeat Password" />
-                    )}
-                    </FormItem>
-                    <div className="web-forget-item">
-                    <a className="login-form-forgot" href="/find_passwd">Forgot password</a>
-                    Or <a href="#/login">login now!</a>
-                    </div>
-                    <FormItem>
-                        <Button type="primary" htmlType="submit" className="login-form-button" loading={this.state.isLoad ? true : false}>
-                        Log in
-                    </Button>
-                    </FormItem>
-                </Form>
+                <div className="login-wrap">
+                    <div className ="web-handle-type">注册</div>
+                    <Form onSubmit={this.handleSubmit} className="login-form">
+                        <FormItem>
+                        {getFieldDecorator('userName', {
+                            rules: [{ required: true, message: 'Please input your username!' }],
+                        })(
+                            <Input addonBefore={<Icon type="phone" />} placeholder="Username" />
+                        )}
+                        </FormItem>
+                        <FormItem>
+                        {getFieldDecorator('passwordOne', {
+                            rules: [{ required: true, message: 'Please input your Password!' }],
+                        })(
+                            <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Password" />
+                        )}
+                        </FormItem>
+                        <FormItem>
+                        {getFieldDecorator('passwordTwo', {
+                            rules: [{ required: true, message: 'Please input your Password!' }],
+                        })(
+                            <Input addonBefore={<Icon type="lock" />} type="password" placeholder="repeat Password" />
+                        )}
+                        </FormItem>
+                        <FormItem>
+                            <div>
+                            {getFieldDecorator('captchaCode', {
+                                // rules: [{ required: true, message: '请输入验证码!' }],
+                            })(
+                                <Input type="text" placeholder="验证码" className="captcha-code login-left"/>
+                            )}
+                            <div className="login-left login-code-content"><img src={this.state.captcha} onClick={this.refreshCaptcha} /></div>
+                            <Button onClick={this.refreshCaptcha} className="login-left login-refresh-content">刷新</Button></div>
+                        </FormItem>
+                        <div className="web-forget-item">
+                        <a className="login-form-forgot" href="/find_passwd">Forgot password</a>
+                        Or <a href="#/login">login now!</a>
+                        </div>
+                        <FormItem>
+                            <Button type="primary" htmlType="submit" className="login-form-button" loading={this.state.isLoad ? true : false}>
+                            Log in
+                        </Button>
+                        </FormItem>
+                    </Form>
+                </div>
             </div>
         );
     }

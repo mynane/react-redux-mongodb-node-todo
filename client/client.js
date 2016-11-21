@@ -7,7 +7,7 @@ import Hello from '../src/components/hello/index';
 import Login from '../src/components/Login/index';
 import Register from '../src/components/Register/index';
 import List from '../src/components/List/index';
-
+import Detail from '../src/components/Detail/index';
 import 'antd/dist/antd.css';
 
 var initialState = {
@@ -21,7 +21,9 @@ var initialState = {
     completed: false,
     text: 'Learn how to use react and redux'
   }],
-  list:[],
+  files: [],
+  list:{records:[],count:0},
+  detail:{},
   menuList:[{
     id: 0,
     "name": "选项1",
@@ -52,11 +54,12 @@ render(
   <Provider store={store}>
       <Router history={hashHistory}>
       <Route path="/" component={App}>
-        <IndexRoute component={Hello}/>
-        <Route path="/index" component={Hello} />
+        <IndexRoute component={List}/>
+        <Route path="/index" component={List} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/list" component={List} />
+        <Route path="/detail" component={Detail} />
       </Route>
     </Router>
   </Provider>,

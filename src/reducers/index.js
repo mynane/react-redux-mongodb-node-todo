@@ -57,7 +57,6 @@ var reducer = function (state, action) {
           mobile: action.value.mobile
         });
       case 'LOGIN_SHOW_TODO':
-      console.log(action.login);
         return Object.assign({}, state, {
           login: action.login
         });
@@ -70,6 +69,12 @@ var reducer = function (state, action) {
       case 'LIST_TODO':
         return Object.assign({}, state, {
           list: action.list
+        });
+
+      case 'LIST_DETAIL_TODO':
+        return Object.assign({},state,{
+          detail: action.data.detail,
+          files: action.data.files
         });
     default: 
       return state;

@@ -1,8 +1,6 @@
 var query = {
     postList: {
-        userId: "createUser",
-        page: "page",
-        type: "type"
+        userId: "createUser"
     }
 }
 
