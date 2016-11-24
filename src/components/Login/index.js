@@ -18,18 +18,18 @@ class Login extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             isLoad: false,
-            captcha: '/captcha.png?_t=' + new Date() * 1
+            captcha: '/common/captcha.png?_t=' + new Date() * 1
         };
         this.refreshCaptcha = this.refreshCaptcha.bind(this);
     }
 
     refreshCaptcha() {
-        this.setState({'captcha': '/captcha.png?v=' + new Date()})
+        this.setState({'captcha': '/common/captcha.png?v=' + new Date()})
     }
 
     handleSubmit(e) {
         e.preventDefault();
-        let api = 'http://localhost:3000/login';
+        let api = 'http://localhost:3000/user/login';
         let dispatch = this.props.dispatch;
         this.props.form.validateFields((err, value) => {
             console.log(value);

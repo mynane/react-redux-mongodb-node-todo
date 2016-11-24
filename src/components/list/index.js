@@ -16,7 +16,7 @@ const getList = (props, currPage) => {
     currPage = currPage ? currPage : 1;
     query = query ? (query + '&page=' + currPage) : (query + '?page=' + currPage)
     ajax({
-        url: 'http://localhost:3000/postList' + query ,
+        url: 'http://localhost:3000/post/postList' + query ,
         type: 'get'
     }).then((jsonData)=>{
         if(jsonData.meta.code == 200) {
@@ -36,7 +36,7 @@ const getList = (props, currPage) => {
 
 const getDetail = (id) => {
     ajax({
-        url: 'http://localhost:3000/detail?id=' + id ,
+        url: 'http://localhost:3000/post/detail?id=' + id ,
         type: 'get'
     }).then((jsonData)=>{
         if(jsonData.meta.code == 200) {
@@ -76,7 +76,7 @@ class Login extends Component {
 
     loginOut() {
         ajax({
-            url: '/loginOut',
+            url: '/user/loginOut',
             type: 'get'
         }).then((jsonData)=>{
             if(jsonData.meta.code == 200) {

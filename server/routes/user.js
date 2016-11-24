@@ -24,7 +24,6 @@ var privateKey = fs.readFileSync(path.join(process.cwd(), 'private.key'));
 var CONFIG = require('../config/sysConfig').CONFIG;
 
 var nodemailer = require('nodemailer');
-console.log(CONFIG);
 var transporter = nodemailer.createTransport({
     service: CONFIG.EMAIL.service,
     auth: {
@@ -85,20 +84,21 @@ router.post('/register', function (req, res, next) {
         res.send(restResult);
         return;
     }
-    var captchaCode = req.body.captchaCode;
-    if(!captchaCode) {
+    var authCode = req.body.authCode;
+    if(!authCode) {
         restResult.meta.code = RestResult.ILLEGAL_ARGUMENT_ERROR_CODE;
         restResult.meta.message = "验证码不能为空";
         res.send(restResult);
         return;
     }
-
-    if(req.session.captchaCode != captchaCode) {
+    var authCode = req.body.authCode;
+    if(req.session.authCode != authCode) {
         restResult.meta.code = RestResult.CAPTCHA_CODE_ERROR_CODE;
         restResult.meta.message = "验证码错误";
         res.send(restResult);
         return;
     }
+
 
     //findOne方法,第一个参数数条件,第二个参数是字段投影,第三那个参数是回调函数  
     UserEntity.findOne({ mobile: mobile }, '_id', function (err, user) {
@@ -230,133 +230,9 @@ router.post('/login', function (req, res, next) {
 
 });
 
-router.post('/addPost', LoginSession, function (req, res, next) {
-    var restResult = new RestResult();
-    var title = req.body.title;
-    var createUser = req.body.userId;
-    var content = req.body.content;
-    var addPost = new PostEntity({ title: title, createUser: createUser, content: content });
-    //调用实体的实例的保存方法  
-    addPost.save(function (err, row) {
-        if (err) { //服务器保存异常  
-            restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
-            restResult.meta.message = "服务器异常";
-            res.send(restResult);
-            return;
-        }
-
-        res.send(restResult); //返回成功结果  
-
-    });
-});
-
-router.get('/postList', LoginSession, function (req, res, next) {
-    var queryObject = FormatQuery(req.query, queryConfig.postList);
-    var restResult = new RestResult();
-    var page = req.query.page || 1;
-    dbHelper.pageQuery(page, 10, PostEntity, { path: 'createUser', model: 'UserEntity' }, queryObject, {
-        created_time: 'desc'
-    }, function (error, $page) {
-        if (error) {
-            next(error);
-        } else {
-            var list = {
-                records: $page.results,
-                pageCount: $page.pageCount,
-                count: $page.count
-            };
-            restResult.data.list = list;
-            res.send(restResult); //返回成功结果
-        }
-    });
-}, function (err) {
-    if (err) { //服务器保存异常  
-        restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
-        restResult.meta.message = "服务器异常";
-        res.send(restResult);
-        return;
-    }
-});
-
 router.get('/loginOut', function (req, res, next) {
     res.cookie('token', 0, { maxAge: -1, httpOnly: true, path: '/', secure: false });
     res.send({ meta: {code: 200, message: ""}});
 });
 
-router.get('/detail', function (req, res, next) {
-    var restResult = new RestResult();
-    var searchId = req.query.id;
-    dbHelper.detailQuery(PostEntity, {path: 'createUser', model: 'UserEntity'}, {_id: searchId},{
-        uploadTime: 'desc'
-    } , function(err, data){
-        if (err) { //服务器保存异常  
-            restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
-            restResult.meta.message = "服务器异常";
-            res.send(restResult);
-            return;
-        }
-        else {
-            restResult.meta.code = 200;
-            restResult.data = data;
-            res.send(restResult);
-        }
-    });
-});
-
-router.get('/captcha.png', function (req, res) {
-    var captchaCode = parseInt(Math.random()*9000+1000);
-    req.session.captchaCode = captchaCode;
-    var p = new captchapng(80,30,captchaCode); // width,height,numeric captcha 
-    p.color(0, 0, 0, 0);  // First color: background (red, green, blue, alpha) 
-    p.color(80, 80, 80, 255); // Second color: paint (red, green, blue, alpha) 
-
-    var img = p.getBase64();
-    var imgbase64 = new Buffer(img,'base64');
-    res.writeHead(200, {
-        'Content-Type': 'image/png'
-    });
-    res.end(imgbase64);
-});
-
-router.post('/upload', function (req, res, next) {
-    var id = req.path.split('/')[2];
-    console.log(req.path);
-    var form = new formidable.IncomingForm();
-    form.encoding = 'utf-8';
-    form.keepExtensions = true;
-    form.uploadDir = './public/';
-    form.parse(req);
-    form.on('file', function(name, file) {
-        if(!!file) {
-            var uploadFile = new ImageEntity({ fileName: file.name, fileType: file.type, fileSize: file.size, filePath: file.path, listId: id });
-            uploadFile.save(function(err, row){
-                if(err){
-                    return;
-                }
-                res.writeHead(200, {'content-type': 'text/plain'});
-                res.write('received upload:\n\n');
-                res.end('ok');
-            });
-        }
-    });
-
-    return;
-});
-
-router.get('/download/*',function(req,res,next){
-    var id = req.path.split('/')[2];
-    ImageEntity.findOne({_id: id}, function(err, doc) {
-        res.download(doc.filePath, doc.fileName);
-    });
-    // res.send(req);
-    // console.log(123123);
-    //..db get file realpath
-    // res.download(realpath,filename);
-});
-
-router.get('/qrcode', function (req, res){
-    var temp_qrcode = qr_image.image('http://www.baidu.com');  
-    res.type('png');  
-    temp_qrcode.pipe(res); 
-}); 
 module.exports = router;

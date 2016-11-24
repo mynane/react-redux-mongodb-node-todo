@@ -16,14 +16,14 @@ class Register extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             isLoad: false,
-            captcha: '/captcha.png?_t=' + new Date() * 1
+            captcha: '/common/captcha.png?_t=' + new Date() * 1
         };
         this.refreshCaptcha = this.refreshCaptcha.bind(this);
         this.authCode = this.authCode.bind(this);
     }
 
     refreshCaptcha() {
-        this.setState({'captcha': '/captcha.png?v=' + new Date()})
+        this.setState({'captcha': '/common/captcha.png?v=' + new Date()})
     }
 
     authCode() {
@@ -37,7 +37,7 @@ class Register extends Component {
             message.error('请输入邮箱');
         }
         ajax({
-            url: '/authCode',
+            url: '/user/authCode',
             data:{
                 captchaCode: captchaCode,
                 email: email
@@ -57,7 +57,7 @@ class Register extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        let api = 'http://localhost:3000/register';
+        let api = 'http://localhost:3000/user/register';
         let dispatch = this.props.dispatch;
         this.props.form.validateFields((err, value) => {
             if (!err) {
@@ -68,13 +68,14 @@ class Register extends Component {
                         password: value.passwordOne,
                         passwordTwo: value.passwordTwo,
                         captchaCode: value.captchaCode,
-                        email: value.email
+                        email: value.email,
+                        authCode: authCode
                     },
                     type: 'post'
                 }).then((jsonData)=>{
                     if(jsonData.meta.code == 200) {
                         message.success('注册成功');
-                        this.props.router.replace('/list')
+                        this.props.router.replace('/post/list')
                     }
                     else {
                         message.error(jsonData.meta.message);
@@ -129,6 +130,13 @@ class Register extends Component {
                             )}
                             <div className="login-left login-code-content"><img src={this.state.captcha} onClick={this.refreshCaptcha} /></div>
                             <Button onClick={this.authCode} className="login-left login-refresh-content">获取验证码</Button></div>
+                        </FormItem>
+                        <FormItem>
+                        {getFieldDecorator('authCode', {
+                            rules: [{ required: true, message: 'Please input your authCode!' }],
+                        })(
+                            <Input addonBefore={<Icon type="code-o" />} type="text" placeholder="authCode" />
+                        )}
                         </FormItem>
                         <div className="web-forget-item">
                         <a className="login-form-forgot" href="/find_passwd">Forgot password</a>

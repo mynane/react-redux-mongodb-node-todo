@@ -7,22 +7,26 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var webpackDevMiddleware = require('webpack-dev-middleware');
 var webpackHotMiddleware = require('webpack-hot-middleware');
-var routes = require('./routes/user');
+var user = require('./routes/user');
 var chatRoute = require('./routes/chat');
+var common = require('./routes/common');
+var post = require('./routes/post');
+var article = require('./routes/article');
+
 var app = express();
 var port = 3000;
 
-// 引入redis
-var redis = require('redis'),
-    RDS_PORT = 6379,
-    RDS_HOST = '127.0.0.1',
-    RDS_PWD  = 'abc369188',
-    RDS_OPTS = {auth_pass: RDS_PWD},
-    client = redis.createClient(RDS_PORT, RDS_HOST, RDS_OPTS);
+// // 引入redis
+// var redis = require('redis'),
+//     RDS_PORT = 6379,
+//     RDS_HOST = '127.0.0.1',
+//     RDS_PWD  = 'abc369188',
+//     RDS_OPTS = {auth_pass: RDS_PWD},
+//     client = redis.createClient(RDS_PORT, RDS_HOST, RDS_OPTS);
 
-client.on('ready', function (res) {
-    console.log('ready');
-});
+// client.on('ready', function (res) {
+//     console.log('ready');
+// });
 var compiler = webpack(config);
 app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
 app.use(webpackHotMiddleware(compiler));
@@ -36,13 +40,16 @@ app.use(session({
   secret: 'love',
   name: 'pageSeesion'
 }));
-app.use('/', function(req, res, next) {
-  req.client = client;
-  next();
-})
+// app.use('/', function(req, res, next) {
+//   req.client = client;
+//   next();
+// })
 app.use(express.static('./dist'));
-app.use('/', routes);
-app.use('/chat', chatRoute)
+app.use('/user', user);
+app.use('/common', common);
+app.use('/post', post);
+app.use('/article', article);
+app.use('/chat', chatRoute);
 app.get("/", function(req, res) {
   res.sendFile(path.resolve('client/index.html'));
 });

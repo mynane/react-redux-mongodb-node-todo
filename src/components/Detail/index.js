@@ -9,7 +9,7 @@ import actions from '../../actions';
 import notDisAction from '../../actions/actions';
 
 import './detail.css';
-let uploadUrl = '/upload';
+let uploadUrl = '/common/upload';
 const props = {
   name: 'file',
   action: uploadUrl,
@@ -33,7 +33,7 @@ const getDetail = (props) => {
     var id = props.location.query.id;
     var dispatch = props.dispatch;
     ajax({
-        url: 'http://localhost:3000/detail?id=' + id ,
+        url: 'http://localhost:3000/post/detail?id=' + id ,
         type: 'get'
     }).then((jsonData)=>{
         if(jsonData.meta.code == 200) {
@@ -54,31 +54,10 @@ const getDetail = (props) => {
 class Login extends Component {
     constructor(props) {
         super(props);
-        this.download = this.download.bind(this);
     }
 
     componentWillMount() {
         getDetail(this.props);
-    }
-
-    download(file) {
-        ajax({
-            url: '/detail?id=' + id ,
-            type: 'get'
-        }).then((jsonData)=>{
-            if(jsonData.meta.code == 200) {
-                dispatch({type:'LIST_DETAIL_TODO', data: jsonData.data});
-                message.success('请求成功');
-            }
-            else if (jsonData.meta.code == 401) {
-                props.router.replace('/login');
-            }
-            else {
-                message.error(jsonData.meta.message);
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
     }
 
     render() {
@@ -90,12 +69,12 @@ class Login extends Component {
                     {
                         this.props.files.map((item, index)=>{
                             return (<li><span>{index}</span><span> &nbsp;:&nbsp; </span>
-                            <span><a href={'/download/'+item._id} title="点击下载">{item.fileName}</a></span>
+                            <span><a href={'/common/download/'+item._id} title="点击下载">{item.fileName}</a></span>
                             <span>{Math.ceil(item.fileSize/1024) + 'KB'}</span></li>)
                         })
                     }
                 </ul></div>
-                <img src='/qrcode' />
+                <img src='/common/qrcode' />
                  <Upload {...props}>
                     <Button type="ghost">
                     <Icon type="upload" /> Click to Upload
