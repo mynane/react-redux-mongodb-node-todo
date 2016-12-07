@@ -98,10 +98,11 @@ router.post('/register', function (req, res, next) {
         res.send(restResult);
         return;
     }
+    var email = req.body.email;
 
 
     //findOne方法,第一个参数数条件,第二个参数是字段投影,第三那个参数是回调函数  
-    UserEntity.findOne({ mobile: mobile }, '_id', function (err, user) {
+    UserEntity.findOne({ phone: mobile }, '_id', function (err, user) {
         if (err) { //查询异常  
             restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
             restResult.meta.message = "服务器异常";
@@ -116,7 +117,7 @@ router.post('/register', function (req, res, next) {
             return;
         }
         password = crypto.createHash('md5').update(password).digest('hex');
-        var registerUser = new UserEntity({ mobile: mobile, password: password });
+        var registerUser = new UserEntity({ phone: mobile, pwd: password, email: email});
         //调用实体的实例的保存方法  
         registerUser.save(function (err, row) {
             if (err) { //服务器保存异常  
@@ -201,7 +202,7 @@ router.post('/login', function (req, res, next) {
         return;
     }
     password = crypto.createHash('md5').update(password).digest('hex');
-    UserEntity.findOne({ mobile: mobile, password: password }, { password: 0 }, function (err, user) {
+    UserEntity.findOne({ phone: mobile, pwd: password }, { password: 0 }, function (err, user) {
         if (err) {
             restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
             restResult.meta.message = "服务器异常";
@@ -224,7 +225,7 @@ router.post('/login', function (req, res, next) {
         res.send(restResult);
 
         //更新最后登陆时间  
-        UserEntity.update({ _id: user._id }, { $set: { lastLoginTime: new Date() } }).exec();
+        UserEntity.update({ _id: user._id }, { $set: { lateLoginTime: new Date(), loginTimes: ++user.loginTimes } }).exec();
 
     });
 

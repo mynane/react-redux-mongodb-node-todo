@@ -23,7 +23,7 @@ var initialState = {
     text: 'Learn how to use react and redux'
   }],
   files: [],
-  list:{records:[],count:0},
+  list:[],
   detail:{},
   menuList:[{
     id: 0,

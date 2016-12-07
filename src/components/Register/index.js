@@ -69,13 +69,13 @@ class Register extends Component {
                         passwordTwo: value.passwordTwo,
                         captchaCode: value.captchaCode,
                         email: value.email,
-                        authCode: authCode
+                        authCode: value.authCode
                     },
                     type: 'post'
                 }).then((jsonData)=>{
                     if(jsonData.meta.code == 200) {
                         message.success('注册成功');
-                        this.props.router.replace('/post/list')
+                        this.props.router.replace('/list')
                     }
                     else {
                         message.error(jsonData.meta.message);
@@ -144,7 +144,7 @@ class Register extends Component {
                         </div>
                         <FormItem>
                             <Button type="primary" htmlType="submit" className="login-form-button" loading={this.state.isLoad ? true : false}>
-                            Log in
+                            regiest in
                         </Button>
                         </FormItem>
                     </Form>
