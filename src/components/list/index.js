@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Form, Icon, Input, Button, Checkbox, message, Pagination } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, message, Pagination, Table } from 'antd';
 import { bindActionCreators } from 'redux';
 import ArticleApi from '../../api/article';
 import ajax from 'pajamas';
@@ -27,6 +27,7 @@ class Login extends Component {
         super(props);
         this.loginOut = this.loginOut.bind(this);
         this.onPaginChange = this.onPaginChange.bind(this);
+        this.addArticle = this.addArticle.bind(this);
         // this.onDetail = this.onDetail.bind(this);
     }
 
@@ -40,6 +41,10 @@ class Login extends Component {
 
     onDetail(id) {
         this.props.router.push('/detail?id=' + id);
+    }
+
+    addArticle() {
+        this.props.router.push('/edit');
     }
 
     loginOut() {
@@ -62,10 +67,10 @@ class Login extends Component {
     render() {
         return ( 
             <div className = "web-list-wrap" >
-            <div > < a href = "javascript:void(0);" onClick = { this.loginOut } > 退出登录 < /a></div >
+            <div > < a href = "javascript:void(0);" onClick = { this.loginOut } > 退出登录 < /a> | < a href = "javascript:void(0);" onClick = { this.addArticle } > 添加文件 < /a></div >
                 {
                     this.props.list.map((item, index) => {
-                        return (<ListItem listData = {item}/>)
+                        return (<ListItem router = {this.props.router} listData = {item}/>)
                     })
                 }
             < div class = "pagin-wrap" >

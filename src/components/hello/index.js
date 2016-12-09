@@ -7,7 +7,7 @@ const FormItem = Form.Item;
 import actions from '../../actions';
 import notDisAction from '../../actions/actions';
 
-import './Hello.css';
+import './hello.css';
 
 class Hello extends Component {
     constructor(props) {

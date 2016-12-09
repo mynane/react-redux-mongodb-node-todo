@@ -1,6 +1,6 @@
 import ajax from 'pajamas';
 const apikey = 'e027d5a4941bfd6b452583c4e3c50b89';
-let api = 'http://localhost:3000/login';
+let api = '/user/login';
 const notDisActions = {
     submitTodo:(dispatch, getState) => {
         let that = notDisActions.submitTodo.value;

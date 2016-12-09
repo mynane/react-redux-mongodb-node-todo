@@ -16,7 +16,7 @@ const getList = (props, currPage) => {
     currPage = currPage ? currPage : 1;
     query = query ? (query + '&page=' + currPage) : (query + '?page=' + currPage)
     ajax({
-        url: 'http://localhost:3000/postList' + query ,
+        url: '/postList' + query ,
         type: 'get'
     }).then((jsonData)=>{
         if(jsonData.meta.code == 200) {
@@ -36,7 +36,7 @@ const getList = (props, currPage) => {
 
 const getDetail = (id) => {
     ajax({
-        url: 'http://localhost:3000/detail?id=' + id ,
+        url: '/detail?id=' + id ,
         type: 'get'
     }).then((jsonData)=>{
         if(jsonData.meta.code == 200) {

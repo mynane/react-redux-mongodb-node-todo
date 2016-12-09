@@ -12,9 +12,11 @@ var chatRoute = require('./routes/chat');
 var common = require('./routes/common');
 var post = require('./routes/post');
 var article = require('./routes/article');
+var platform = require('os').platform();
 
 var app = express();
-var port = 3000;
+var host = platform === 'win32' ? 'localhost' : '106.14.58.33';
+var port = platform === 'win32' ? 3000 : 80;
 
 // // 引入redis
 // var redis = require('redis'),
@@ -54,7 +56,7 @@ app.get("/", function(req, res) {
   res.sendFile(path.resolve('client/index.html'));
 });
 
-app.listen(port, function(error) {
+app.listen(port, host,function(error) {
   if (error) {
     console.error(error)
   } else {

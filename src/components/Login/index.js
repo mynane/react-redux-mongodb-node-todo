@@ -29,7 +29,7 @@ class Login extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        let api = 'http://localhost:3000/user/login';
+        let api = '/user/login';
         let dispatch = this.props.dispatch;
         this.props.form.validateFields((err, value) => {
             console.log(value);

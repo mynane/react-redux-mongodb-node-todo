@@ -9,6 +9,8 @@ import actions from '../../actions';
 import notDisAction from '../../actions/actions';
 
 import './detail.css';
+import '../common/common.css';
+
 let uploadUrl = '/common/upload';
 const props = {
   name: 'file',
@@ -33,7 +35,7 @@ const getDetail = (props) => {
     var id = props.location.query.id;
     var dispatch = props.dispatch;
     ajax({
-        url: 'http://localhost:3000/post/detail?id=' + id ,
+        url: '/article/articleDetail?id=' + id ,
         type: 'get'
     }).then((jsonData)=>{
         if(jsonData.meta.code == 200) {
@@ -62,24 +64,10 @@ class Login extends Component {
 
     render() {
         return (
-            <div className="web-login-wrap">
-                <span>{this.props.detail._id}</span><br/>
-                <span>{this.props.detail.title}</span><br/>
-                <div><ul>
-                    {
-                        this.props.files.map((item, index)=>{
-                            return (<li><span>{index}</span><span> &nbsp;:&nbsp; </span>
-                            <span><a href={'/common/download/'+item._id} title="点击下载">{item.fileName}</a></span>
-                            <span>{Math.ceil(item.fileSize/1024) + 'KB'}</span></li>)
-                        })
-                    }
-                </ul></div>
+            <div className="web-detail-wrap">
+                <div className="article-title">{this.props.detail.title}</div>
+                <div className="markdown" dangerouslySetInnerHTML={{ __html: this.props.detail.content }}></div>
                 <img src='/common/qrcode' />
-                 <Upload {...props}>
-                    <Button type="ghost">
-                    <Icon type="upload" /> Click to Upload
-                    </Button>
-                </Upload>
             </div>
         );
     }

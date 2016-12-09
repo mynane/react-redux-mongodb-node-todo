@@ -57,7 +57,7 @@ class Register extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        let api = 'http://localhost:3000/user/register';
+        let api = 'user/register';
         let dispatch = this.props.dispatch;
         this.props.form.validateFields((err, value) => {
             if (!err) {

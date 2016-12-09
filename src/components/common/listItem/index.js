@@ -30,11 +30,17 @@ export default class ListItem extends Component {
         };
         this.goDetail = this.goDetail.bind(this);
     }
+        onDetail(id) {
+        this.props.router.push('/detail?id=' + id);
+    }
     goDetail() {
         let watch = ++this.state.watch;
-        ArticleApi.addWatch( this.props.listData._id, watch,() => {
+        let id = this.props.listData._id;
+        ArticleApi.addWatch( id, watch,() => {
             this.setState({'watch': watch});
-        })
+        });
+        this.props.router.push('/detail?id=' + id);
+        
     }
 
     render() {

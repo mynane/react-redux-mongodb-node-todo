@@ -122,7 +122,7 @@ router.post('/register', function (req, res, next) {
         registerUser.save(function (err, row) {
             if (err) { //服务器保存异常  
                 restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
-                restResult.meta.message = "服务器异常";
+                restResult.meta.message = {text:"服务器异常", a: err};
                 res.send(restResult);
                 return;
             }

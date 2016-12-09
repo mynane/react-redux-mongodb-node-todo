@@ -6,9 +6,10 @@ import App from '../src/index';
 import Hello from '../src/components/hello/index';
 import Login from '../src/components/Login/index';
 import Register from '../src/components/Register/index';
-import List from '../src/components/List/index';
+import List from '../src/components/list/index';
 import Detail from '../src/components/Detail/index';
 import Chat from '../src/components/Chat/index';
+import Edit from '../src/components/editor/index';
 import 'antd/dist/antd.css';
 
 var initialState = {
@@ -55,13 +56,14 @@ render(
   <Provider store={store}>
       <Router history={hashHistory}>
       <Route path="/" component={App}>
-        <IndexRoute component={List}/>
+        <IndexRoute component={Login}/>
         <Route path="/index" component={List} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/list" component={List} />
         <Route path="/detail" component={Detail} />
         <Route path="/chat" component={Chat} />
+        <Route path="/edit" component={Edit} />
       </Route>
     </Router>
   </Provider>,

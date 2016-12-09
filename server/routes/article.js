@@ -33,10 +33,16 @@ router.post('/addArticle', function(req, res, next) {
     articleData.tags = articleData.tags.split(',');
     var articleEntity = new ArticleEntity({ title: articleData.title, content: articleData.content, tags: articleData.tags, user: articleData.user });
     articleEntity.save(function(err, doc) {
-        if (err) {
+        if (err) { //服务器保存异常  
+            restResult.meta.code = RestResult.SERVER_EXCEPTION_ERROR_CODE;
+            restResult.meta.message = "服务器异常";
+            res.send(restResult);
             return;
+        } else {
+            restResult.meta.code = 200;
+            restResult.data = doc;
+            res.send(restResult);
         }
-        res.send(doc);
     });
 });
 
@@ -56,7 +62,7 @@ router.post('/addComment', function(req, res, next) {
 router.get('/articleList', function(req, res, next) {
     var restResult = new RestResult();
     var query = req.query;
-    ArticleEntity.find({ user: query.userId }).populate({ path: 'user', model: 'UserEntity' }).exec(function(err, docs) {
+    ArticleEntity.find({ user: query.userId },{content: 0, __v: 0}).populate({ path: 'user', model: 'UserEntity' }).exec(function(err, docs) {
         if (err) {
             return;
         }

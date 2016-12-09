@@ -1,0 +1,9 @@
+.web-detail-wrap {
+	width: 960px;
+	margin: 10px auto;
+}
+.article-title {
+	text-align: center;
+    font-size: 1.6rem;
+    font-weight: 400;
+}
