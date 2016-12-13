@@ -1,0 +1,11 @@
+.web-content-wrap {
+    width: 100%;
+    .web-list-wrap, .pagin-wrap {
+        width:980px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+    .pagin-wrap {
+        margin: 20px auto 40px auto;
+    }
+}

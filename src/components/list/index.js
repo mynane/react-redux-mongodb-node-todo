@@ -7,19 +7,19 @@ import { connect } from 'react-redux';
 const FormItem = Form.Item;
 
 import ListItem from '../common/listItem/index';
+import Header from '../common/header/index';
 
 import actions from '../../actions';
 import notDisAction from '../../actions/actions';
 
-import './list.css';
+import './list.scss';
 
-const getList = (props, currPage) => {
-    var query = props.router.location.search,
+const getList = (props, currPage, cb) => {
+    let query = props.router.location.search,
         dispatch = props.dispatch;
-    ArticleApi.getList(query, props, function(jsonData){
-        dispatch({ type: 'LIST_TODO', list: jsonData.data.lists });
-        message.success('请求成功');
-    });
+        query = query ? query : {};
+    query.currPage = currPage;
+    ArticleApi.getList(query, props, cb);
 };
 
 class Login extends Component {
@@ -28,15 +28,26 @@ class Login extends Component {
         this.loginOut = this.loginOut.bind(this);
         this.onPaginChange = this.onPaginChange.bind(this);
         this.addArticle = this.addArticle.bind(this);
+        this.state = {
+            count: 0,
+            pageCount: 0,
+            records: [],
+        }
         // this.onDetail = this.onDetail.bind(this);
     }
 
     componentWillMount() {
-        getList(this.props);
+        getList(this.props, 1, (list) => {
+            console.log(list);
+            this.setState({count: list.count, pageCount: list.pageCount, records: list.records});
+        });
     }
 
     onPaginChange(num) {
-        getList(this.props, num);
+        getList(this.props, num, (list) => {
+            console.log(list);
+            this.setState({count: list.count, pageCount: list.pageCount, records: list.records});
+        });
     }
 
     onDetail(id) {
@@ -44,7 +55,7 @@ class Login extends Component {
     }
 
     addArticle() {
-        this.props.router.push('/edit');
+        this.props.router.push('/edit?id=' + '5836c5bc60d06a78648a1e5c');
     }
 
     loginOut() {
@@ -65,15 +76,20 @@ class Login extends Component {
     }
 
     render() {
+        // <!-- < a href = "javascript:void(0);" onClick = { this.loginOut } > 退出登录 < /a> | < a href = "javascript:void(0);" onClick = { this.addArticle } > 添加文件 < /a> -->
+        console.log(this.props);
         return ( 
-            <div className = "web-list-wrap" >
-            <div > < a href = "javascript:void(0);" onClick = { this.loginOut } > 退出登录 < /a> | < a href = "javascript:void(0);" onClick = { this.addArticle } > 添加文件 < /a></div >
+            <div className = "web-content-wrap" >
+            <Header/>
+            <div className="web-list-wrap">
                 {
-                    this.props.list.map((item, index) => {
+                    this.state.records.map((item, index) => {
                         return (<ListItem router = {this.props.router} listData = {item}/>)
                     })
                 }
-            < div class = "pagin-wrap" >
+            </div >
+            < div className = "pagin-wrap" >
+                <Pagination showQuickJumper pageSize={20} defaultCurrent={1} total={this.state.count} onChange={this.onPaginChange} />
             </div>
             </div>
         );
